@@ -22,29 +22,44 @@ for file in os.listdir(path):
 
         f.close()
 
-        for i in range(len(lines[0])):
+        for n in range(len(dblines)):
+            loops.append("")
+            stems.append("")
+
+        for i in range(len(dblines[0])):
+            # reference character
+            # all chars in same alignment pos should be equivalent
             curr = dblines[0][i]
+
+            if "-" in curr:
+                # ignore dashes
+                continue
+
             found = True
-            for j in range(len(lines)):
+            for j in range(len(dblines)):
                 if dblines[j][i] in curr:
                     found = True
                 else:
+                    # different char found
+                    # quit searching alignment pos
                     found = False
                     break
 
             if found:
-                if dblines[j][i] in ".":
-                    loops.append(curr)
-                elif dblines[j][i] in "\n":
-                    loops.append(curr)
-                    stems.append(curr)
-                else:
-                    stems.append(curr)
+                for k in range(len(dblines)):
+                    nuc = nuclines[k][i]
+                    if dblines[k][i] in ".":
+                        loops[k] = loops[k] + nuc
+                    elif dblines[j][i] in "\n":
+                        loops[k] = loops[k] + nuc
+                        stems[k] = stems[k] + nuc
+                    else:
+                        stems[k] = stems[k] + nuc
 
         floop = open(file.replace(".txt","_loop.txt"), "w")
         fstem = open(file.replace(".txt","_stem.txt"), "w")
 
-        for k in range(1,len(headers)):
+        for k in range(len(headers)):
             floop.write(headers[k])
             fstem.write(headers[k])
             floop.write(loops[k])
